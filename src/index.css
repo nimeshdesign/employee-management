@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+/* Manual dark mode: `dark:` utilities activate when .dark is present on <html>,
+   toggled later by our useDarkMode hook — not driven by OS preference. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-accent: #10b981;
+}
+
+body {
+  margin: 0;
+}
+button , a {
+  @apply cursor-pointer;
+}
