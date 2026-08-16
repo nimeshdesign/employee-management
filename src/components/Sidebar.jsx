@@ -1,9 +1,10 @@
 import { NavLink } from 'react-router-dom'
-import { FiGrid, FiUsers, FiUser, FiSettings } from 'react-icons/fi'
+import { FiGrid, FiUsers, FiCalendar, FiUser, FiSettings } from 'react-icons/fi'
 
 const LINKS = [
   { to: '/dashboard', label: 'Dashboard', icon: FiGrid },
   { to: '/employees', label: 'Employees', icon: FiUsers },
+  { to: '/schedule', label: 'Schedule', icon: FiCalendar },
   { to: '/profile', label: 'Profile', icon: FiUser },
   { to: '/settings', label: 'Settings', icon: FiSettings },
 ]

@@ -11,6 +11,7 @@ const Dashboard = lazy(() => import('../pages/Dashboard'))
 const Employees = lazy(() => import('../pages/Employees'))
 const Profile = lazy(() => import('../pages/Profile'))
 const Settings = lazy(() => import('../pages/Settings'))
+const Schedule = lazy(() => import('../pages/Schedule'))
 const Login = lazy(() => import('../pages/Login'))
 
 function AppRoutes() {
@@ -39,6 +40,7 @@ function AppRoutes() {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/employees" element={<Employees />} />
+            <Route path="/schedule" element={<Schedule />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
           </Route>

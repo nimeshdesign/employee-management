@@ -21,12 +21,17 @@ function MainLayout() {
         />
       )}
 
-      <div className="flex flex-1 flex-col">
+      {/* min-w-0 is load-bearing: a flex child defaults to min-width:auto,
+          meaning it refuses to shrink below its content. A page with a wide
+          table (the schedule grid) would push this column wider than the
+          viewport, scrolling the whole document sideways instead of
+          scrolling inside its own container. */}
+      <div className="flex min-w-0 flex-1 flex-col">
         {/* Functional update form: (prev) => !prev, not isSidebarOpen ? ... —
             guarantees we're always flipping the latest value, not one
             captured in a stale closure from an earlier render. */}
         <Navbar onMenuClick={() => setIsSidebarOpen((prev) => !prev)} />
-        <main className="flex-1 p-6">
+        <main className="min-w-0 flex-1 p-6">
           <Outlet />
         </main>
       </div>
