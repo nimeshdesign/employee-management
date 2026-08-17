@@ -40,5 +40,21 @@ export const SHIFT_COLORS = {
 // cell (ring-inset) so it doesn't get clipped by neighbouring cells.
 export const CONFLICT_STYLES = {
   double: 'ring-2 ring-inset ring-red-500',
+  // Fuchsia rather than another red: a rest violation is as hard an error
+  // as a double-booking, but it needs to stay distinguishable at a glance
+  // against both the amber Morning and indigo Night backgrounds it will
+  // most often sit on.
+  rest: 'ring-2 ring-inset ring-fuchsia-500',
   understaffed: 'ring-2 ring-inset ring-orange-400',
 }
+
+// Applied to cells that don't match the active shift filter. Faded rather
+// than blanked, so the surrounding week stays readable as context — the
+// scheduler is usually asking "where do the Night shifts fall?", not
+// "delete everything else from my screen".
+//
+// 40% rather than something more aggressive because `opacity` fades the
+// whole element, cell borders included: much below this and the grid
+// lines disappear along with the shift labels, leaving the matches
+// floating in white space instead of sitting in a legible calendar.
+export const DIMMED_CLASS = 'opacity-40'

@@ -6,7 +6,15 @@ import { ROW_HEIGHT } from './shiftStyles'
 // The explicit height is load-bearing, not cosmetic: the grid works out
 // which rows are on screen with `scrollTop / ROW_HEIGHT`, so a row that
 // grew to fit its content would put every row below it in the wrong place.
-function EmployeeRow({ employee, dates, assignments, conflicts, onDropShift }) {
+function EmployeeRow({
+  employee,
+  dates,
+  assignments,
+  conflicts,
+  restNotes,
+  shiftFilter,
+  onDropShift,
+}) {
   return (
     <tr style={{ height: ROW_HEIGHT }}>
       <td className="sticky left-0 z-10 h-10 w-40 max-w-40 overflow-hidden whitespace-nowrap border-b border-r border-gray-200 bg-white px-3 leading-tight dark:border-gray-700 dark:bg-gray-800">
@@ -15,13 +23,20 @@ function EmployeeRow({ employee, dates, assignments, conflicts, onDropShift }) {
       </td>
       {dates.map((date) => {
         const cellKey = makeKey(employee.id, date)
+        const shift = assignments[cellKey]
         return (
           <ScheduleCell
             key={date}
             cellKey={cellKey}
-            shift={assignments[cellKey]}
+            shift={shift}
             conflict={conflicts[cellKey]}
+            restNote={restNotes[cellKey]}
             department={employee.department}
+            // Resolved to a boolean HERE rather than passing shiftFilter
+            // down: the cell's props stay primitive and, more usefully,
+            // only the handful of cells whose dimmed state actually flips
+            // fail their memo check when the filter changes.
+            dimmed={shiftFilter !== 'All' && shift !== shiftFilter}
             onDropShift={onDropShift}
           />
         )
@@ -47,6 +62,7 @@ function areRowPropsEqual(prev, next) {
   if (
     prev.employee !== next.employee ||
     prev.dates !== next.dates ||
+    prev.shiftFilter !== next.shiftFilter ||
     prev.onDropShift !== next.onDropShift
   ) {
     return false
@@ -55,6 +71,7 @@ function areRowPropsEqual(prev, next) {
     const cellKey = makeKey(next.employee.id, date)
     if (prev.assignments[cellKey] !== next.assignments[cellKey]) return false
     if (prev.conflicts[cellKey] !== next.conflicts[cellKey]) return false
+    if (prev.restNotes[cellKey] !== next.restNotes[cellKey]) return false
   }
   return true
 }

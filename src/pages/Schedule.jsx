@@ -136,6 +136,14 @@ function Schedule() {
         }
         if (shiftFilter !== 'All') {
           // Keep the row only if this employee has that shift somewhere in view.
+          //
+          // On its own this barely filters anything: over a 30-day window
+          // almost everyone works every shift type at least once, so
+          // picking "Morning" drops about one employee in 300 and the grid
+          // looks unchanged. Row filtering is the wrong axis for this
+          // control — the matching CELLS are what the scheduler is looking
+          // for, so the grid also dims the non-matching ones. This check
+          // stays because a row with no match at all is pure noise.
           const hasShift = dates.some(
             (date) => assignments[makeKey(employee.id, date)] === shiftFilter,
           )
@@ -145,6 +153,20 @@ function Schedule() {
       }),
     [employees, department, debouncedSearch, shiftFilter, dates, assignments],
   )
+
+  // How many cells the shift filter actually matches. Without this the
+  // header would report "showing 299 of 300 employees" and imply the
+  // filter had done nothing.
+  const matchingCells = useMemo(() => {
+    if (shiftFilter === 'All') return 0
+    let count = 0
+    for (const employee of visibleEmployees) {
+      for (const date of dates) {
+        if (assignments[makeKey(employee.id, date)] === shiftFilter) count++
+      }
+    }
+    return count
+  }, [visibleEmployees, dates, assignments, shiftFilter])
 
   useEffect(() => {
     getScheduleData().then((data) => {
@@ -315,6 +337,7 @@ function Schedule() {
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Showing {visibleEmployees.length} of {employees.length} employees · {dates[0]} →{' '}
             {dates[dates.length - 1]}
+            {shiftFilter !== 'All' && ` · ${matchingCells} ${shiftFilter} shifts highlighted`}
           </p>
         </div>
         <Button variant="secondary" size="sm" onClick={handleUndo} disabled={history.length === 0}>
@@ -353,6 +376,8 @@ function Schedule() {
         <span className="text-sm">
           <span className="font-medium text-red-600">{conflictSummary.double}</span>
           <span className="text-gray-500 dark:text-gray-400"> double-booked · </span>
+          <span className="font-medium text-fuchsia-600">{conflictSummary.rest}</span>
+          <span className="text-gray-500 dark:text-gray-400"> short rest · </span>
           <span className="font-medium text-orange-500">{conflictSummary.understaffed}</span>
           <span className="text-gray-500 dark:text-gray-400"> under-staffed shifts</span>
         </span>
@@ -368,6 +393,8 @@ function Schedule() {
             dates={dates}
             assignments={assignments}
             conflicts={conflicts.cells}
+            restNotes={conflicts.restNotes}
+            shiftFilter={shiftFilter}
             onDropShift={handleDropShift}
           />
         </div>
